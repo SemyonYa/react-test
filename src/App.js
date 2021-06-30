@@ -1,3 +1,4 @@
+import React from 'react'
 import ExpressionBuilder from './expression-builder/ExpressionBuilder'
 
 function App() {

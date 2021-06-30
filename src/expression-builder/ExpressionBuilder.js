@@ -1,5 +1,6 @@
 import React from 'react';
 import './ExpressionBuilder.css';
+import DraggableItem from './DraggaleItem';
 // import { Draggable, Droppable } from 'react-drag-and-drop';
 
 const types = {
@@ -16,10 +17,6 @@ class Fake {
 }
 
 class ExpressionBuilder extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     activeType = '';
     currentTarget = null;
     expressionData = [];
@@ -33,7 +30,9 @@ class ExpressionBuilder extends React.Component {
                 this.activeType = e.target.getAttribute('data-type');
             });
             elem.addEventListener('dragend', (e) => {
-                const indexForNode = this.currentTarget?.getAttribute('data-index');
+                let indexForNode;
+                if (this.currentTarget)
+                    indexForNode = this.currentTarget.getAttribute('data-index');
                 if (this.activeType && this.currentTarget) {
                     this.pushNodesToExpressionData(this.generateNodes(this.activeType), indexForNode);
                     this.buildExpression();
@@ -60,8 +59,11 @@ class ExpressionBuilder extends React.Component {
                 </div>
                 <div className='expression'></div>
                 <div className='expression2'></div>
+                <div className='test'>
+                    <DraggableItem type={'brackets'} />
+                </div>
             </div>
-            );
+        );
     }
 
     generateNodes(elemType) {
@@ -115,6 +117,8 @@ class ExpressionBuilder extends React.Component {
             }
         }
 
+        const b = this;
+
         function getDraggableNode(innerText, draggableNode, description) {
             if (!draggableNode) {
                 draggableNode = document.createElement('div');
@@ -123,6 +127,10 @@ class ExpressionBuilder extends React.Component {
             draggableNode.setAttribute('draggable', 'true');
             draggableNode.classList.add('expression-node');
             draggableNode.setAttribute('data-type', elemType);
+            draggableNode.addEventListener('dragstart', (e) => {
+                b.activeType = e.target ? e.target.getAttribute('data-type') : null;
+                console.log(b);
+            });
             if (description)
                 draggableNode.setAttribute('data-description', description);
             return draggableNode;
@@ -130,16 +138,16 @@ class ExpressionBuilder extends React.Component {
         return nodes;
     }
 
-    generateDroppable(dataNodeIndex = null) {
+    getDroppableNode(dataNodeIndex = null) {
         let droppableNode = document.createElement('div');
         droppableNode.classList.add('expression-droppable');
         droppableNode.draggable = true;
         if (dataNodeIndex)
             droppableNode.setAttribute('data-index', dataNodeIndex);
         droppableNode.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                this.currentTarget = e.target;
-            });
+            e.preventDefault();
+            this.currentTarget = e.target;
+        });
         return droppableNode;
     }
 
@@ -153,23 +161,23 @@ class ExpressionBuilder extends React.Component {
     }
 
     pushNodesToExpressionData(nodes, index = null) {
-         if (index !== null) {
+        if (index !== null) {
             this.expressionData = [
                 ...this.expressionData.slice(0, index),
                 ...nodes,
                 ...this.expressionData.slice(index),
             ];
-         } else {
-             this.expressionData.push(...nodes);
-         }
+        } else {
+            this.expressionData.push(...nodes);
+        }
     }
 
     buildExpression() {
         this.clearExpression();
-        this.appendNodeToExpression(this.generateDroppable('0'));
+        this.appendNodeToExpression(this.getDroppableNode('0'));
         this.expressionData.forEach((elem, index) => {
             this.appendNodeToExpression(elem);
-            this.appendNodeToExpression(this.generateDroppable(index + 1));
+            this.appendNodeToExpression(this.getDroppableNode(index + 1));
         });
 
         this.expressionToString();
