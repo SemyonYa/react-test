@@ -1,11 +1,14 @@
 import React from 'react';
 import './ExpressionBuilder.css';
 import DraggableItem from './DraggaleItem';
+import DroppableItem from './DroppableItem';
 // import { Draggable, Droppable } from 'react-drag-and-drop';
 
-const types = {
+export const types = {
     operator: 'plus',
     brackets: 'brackets',
+    bracketsLeft: 'bracketsLeft',
+    bracketsRight: 'bracketsRight',
     num: 'num',
     model: 'model'
 };
@@ -17,6 +20,17 @@ class Fake {
 }
 
 class ExpressionBuilder extends React.Component {
+    activeDraggable = null;
+    activeDroppable = null;
+    parts = [];
+
+    state = {
+        nodes: [
+            <DroppableItem onDragOver={(obj) => { this.activeDroppable = obj; }} index={0} key={0} />
+        ],
+    }
+
+    // OLD
     activeType = '';
     currentTarget = null;
     expressionData = [];
@@ -51,20 +65,89 @@ class ExpressionBuilder extends React.Component {
                 <div className='header'>
                     <span className='header-caption'>Элементы конструктора выражения:</span>
                     <div className='parts'>
-                        <div className='parts-item' data-type="plus">+</div>
+                        {[types.brackets, types.operator, types.num, types.model].map(t =>
+                            <DraggableItem
+                                onDragStart={(obj) => { this.activeDraggable = obj }}
+                                onDragEnd={(obj) => { if (this.activeDraggable && this.activeDroppable) this.addParts.bind(this)(obj) }}
+                                type={t}
+                                key={t}
+                            />
+                        )}
+                        {/* <div className='parts-item' data-type="plus">+</div>
                         <div draggable='true' className='parts-item' data-type="brackets">()</div>
                         <div draggable='true' className='parts-item' data-type="num">num</div>
-                        <div draggable='true' className='parts-item' data-type="model">model.prop</div>
+                        <div draggable='true' className='parts-item' data-type="model">model.prop</div> */}
                     </div>
                 </div>
                 <div className='expression'></div>
                 <div className='expression2'></div>
                 <div className='test'>
-                    <DraggableItem type={'brackets'} />
+                    <DraggableItem type={types.operator} />
+                    <DraggableItem type={types.num} />
+                    <DraggableItem
+                        onDragStart={(obj) => { this.activeDraggable = obj }}
+                        // onDrag={() => { this.activeDroppable = null }}
+                        onDragEnd={(obj) => { if (this.activeDraggable && this.activeDroppable) this.addParts.bind(this)(obj) }} // add condition
+                        type={types.brackets}
+                        key={123}
+                    />
+                    <DraggableItem type={types.bracketsLeft} />
+                    <DraggableItem type={types.bracketsRight} />
+                    <DraggableItem type={types.model} />
+                </div>
+                <div className='test2' style={{ display: 'flex' }}>
+                    {this.state.nodes}
                 </div>
             </div>
         );
     }
+
+    addParts(obj) {
+        this.parts.push(obj);
+        console.log(this.parts);
+        // console.log('drag', this.activeDraggable);
+        this.activeDraggable = null;
+        // console.log('drop', this.activeDroppable);
+        this.activeDroppable = null;
+        const nodes = [
+            <DroppableItem onDragOver={(obj) => { this.activeDroppable = obj; }} index={0} key={0} />
+        ];
+        this.parts.forEach((elem, index) => {
+            console.log(elem);
+            // console.log(elem);
+            nodes.push(
+                <DraggableItem
+                    onDragStart={(obj) => { this.activeDraggable = obj }}
+                    // onDrag={() => { this.activeDroppable = null }}
+                    onDragEnd={(obj) => { if (this.activeDraggable && this.activeDroppable) this.addParts.bind(this)(obj) }} // add condition
+                    type={elem.props.type}
+                    key={index * 2 + 1}
+                />
+            );
+            nodes.push(
+                <DroppableItem onDragOver={(obj) => { this.activeDroppable = obj; }} index={index + 1} key={index * 2 + 2} />
+            );
+
+        })
+        // nodes.forEach((n, index) => { n.key = index; console.log(n); });
+        this.setState({
+            nodes: nodes,
+        })
+
+        console.log(nodes);
+    }
+
+    // buildNodesExpression() {
+    // }
+
+
+
+
+
+    ///
+    ///
+    ///
+
 
     generateNodes(elemType) {
         let nodes = [];
