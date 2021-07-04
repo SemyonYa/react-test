@@ -70,7 +70,12 @@ input.expression-node {
 }
 
 .expression2 {
-  padding: 8px;
+  padding: 16px;
+  display: inline-flex;
+}
+.test2 {
+  padding: 16px;
+  display: inline-flex;
 }
 
 @media (max-width: 767px) {
