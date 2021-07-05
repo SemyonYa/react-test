@@ -5,7 +5,6 @@ class DroppableItem extends React.Component {
     state = {
         hovered: false
     };
-    isHovered = false;
 
     styles = {
         width: this.state.hovered ? '50px' : '12px',
@@ -20,15 +19,14 @@ class DroppableItem extends React.Component {
             this.setState({
                 hovered: true
             })
-            // this.isHovered = true;
         }
+
     }
 
     leave() {
         this.setState({
             hovered: false
         })
-        // this.isHovered = false;
     }
 
     render() {
@@ -36,10 +34,18 @@ class DroppableItem extends React.Component {
             <div
                 // className='droppable'
                 draggable='true'
-                onDragOver={() => {this.props.onDragOver(this); this.hover()}}
-                onDragLeave={() => {this.props.onDragLeave(this); this.leave()}}
-                style={this.styles}
-                data-index={this.props.index}
+                onDragOver={(e) => { this.props.onDragOver(e, this); this.hover() }}
+                onDragLeave={() => { this.props.onDragLeave(); this.leave(); console.log('leave'); }}
+                onDragEnd={() => {console.log('end');}}
+                style={{
+                    width: this.state.hovered ? '50px' : '12px',
+                    height: '24px',
+                    borderRadius: '4px',
+                    border: 'dotted 1px rgba(0, 0, 0, 0.12)',
+                    margin: '4px',
+                    transition: '.3s',
+                }}
+            // data-index={this.props.index}
             ></div>
         );
     }

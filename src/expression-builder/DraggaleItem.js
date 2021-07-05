@@ -47,8 +47,9 @@ class DraggableItem extends React.Component {
                 onDragStart={() => this.props.onDragStart(this)}
                 // onDrag={() => this.props.onDrag()}
                 onDragEnd={() => this.props.onDragEnd(this)}
+                // onDragEnter={(e) => { console.log('enter', e); }}
                 style={this.wrapStyles} draggable='true'
-                // data-type={this.props.type}
+            // data-type={this.props.type}
             >
                 <div style={this.labelStyles}></div>
                 {this.props.type === types.operatorSeleect &&
@@ -78,7 +79,7 @@ class DraggableItem extends React.Component {
                 {this.props.type === types.modelSelect &&
                     <div style={this.itemStyles}>
                         <select style={this.inputStyles} onChange={this.changeNumber.bind(this)}>
-                            {this.modelProps.map(p => 
+                            {this.modelProps.map(p =>
                                 <option key={p}>{p}</option>
                             )}
                         </select>
@@ -92,6 +93,7 @@ class DraggableItem extends React.Component {
                         <input type='number' style={this.inputStyles} onChange={this.changeNumber.bind(this)} />
                     </div>
                 }
+                <div style={this.removeStyle} onClick={() => this.props.onRemove(this)}>-</div>
             </div>
         );
     }
@@ -101,13 +103,14 @@ class DraggableItem extends React.Component {
     ///
 
     wrapStyles = {
+        position: 'relative',
         height: '20px',
         width: '65px',
         // maxWidth: '100px',
         borderRadius: '4px',
         border: 'solid 1px #efefef',
         display: 'flex',
-        overflow: 'hidden'
+        // overflow: 'hidden'
     }
 
     labelStyles = {
@@ -115,6 +118,7 @@ class DraggableItem extends React.Component {
         height: '100%',
         borderRadius: '4px',
         backgroundColor: '#efefef',
+        cursor: 'pointer',
     }
 
     itemStyles = {
@@ -132,6 +136,23 @@ class DraggableItem extends React.Component {
         backgroundColor: 'transparent',
         border: 'none',
         borderBottom: 'solid 1px #cecece'
+    }
+
+    removeStyle = {
+        position: 'absolute',
+        bottom: '-6px',
+        right: '0px',
+        width: '10px',
+        height: '10px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '0',
+        lineHeight: '1',
+        borderRadius: '50%',
+        backgroundColor: 'blue',
+        color: 'white',
+        cursor: 'pointer',
     }
 }
 

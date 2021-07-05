@@ -64,7 +64,7 @@ class ExpressionBuilder extends React.Component {
                     </div>
                 </div>
                 <div className='test2' style={{ display: 'flex' }}>
-                    {this.getDroppable(0,0)}
+                    {this.getDroppable(0, 0)}
                     {this.state.nodes.map((n, index) =>
                         [
                             this.getDraggable(n.type, n.key),
@@ -114,12 +114,19 @@ class ExpressionBuilder extends React.Component {
         this.printExpression();
     }
 
+    removePart(key) {
+        this.parts = this.parts.filter(p => p.key !== key)
+        this.buildExpressionNodes();
+        this.printExpression();
+    }
+
     getDraggable(type, key) {
         return <DraggableItem
             onDragStart={(obj) => { this.activeDraggable = obj }}
             // onDrag={() => {this.activeDroppable = null}}
             onDragEnd={(obj) => { if (this.activeDraggable && this.activeDroppable) this.addParts.bind(this)(this.activeDraggable, this.activeDroppable.props.index) }} // add condition
             onUpdateValue={this.updateValue.bind(this)}
+            onRemove={(obj) => { console.log(obj); this.removePart.bind(this)(obj.props.key2) }}
             type={type}
             viewModel={this.props.viewModel}
             key={key}
@@ -128,25 +135,19 @@ class ExpressionBuilder extends React.Component {
     }
 
     getDroppable(index, key) {
-        return <DroppableItem 
-            onDragOver={(obj) => { this.activeDroppable = obj; console.log('over');}} 
-            onDragLeave={() => { 
+        return <DroppableItem
+            onDragOver={(e, obj) => { e.preventDefault(); this.activeDroppable = obj; console.log('over'); }}
+            onDragLeave={() => {
                 setTimeout(() => {
                     this.activeDroppable = null;
-                    console.log('leave');
-                }, 10); 
+                }, 10);
                 console.log(this.activeDroppable);
                 console.log(this.activeDraggable);
             }}
-            index={index} 
-            key={key} 
+            index={index}
+            key={key}
         />;
     }
-
-    // // TODO: 
-    // getKey() {
-    //     return (Math.random() * 100000).toString();
-    // };
 
     buildExpressionNodes() {
         this.setState({
@@ -164,6 +165,7 @@ class ExpressionBuilder extends React.Component {
             } else {
                 expression += p.value;
             }
+            expression += ' '
         });
         console.log(expression);
     }
