@@ -4,11 +4,11 @@ import DraggableItem from './DraggaleItem';
 import DroppableItem from './DroppableItem';
 // import { Draggable, Droppable } from 'react-drag-and-drop';
 
-export class ExpressionPart {
-    // id;
-    // type;
-    // value;
+///
+// Helpers
+///
 
+export class ExpressionPart {
     constructor(key, type, value) {
         this.key = key;
         this.type = type;
@@ -28,11 +28,9 @@ export const types = {
     modelSelect: 'modelSelect',
 };
 
-class Fake {
-    id = null;
-    name = null;
-    age = null;
-}
+///
+// COMPONENT
+///
 
 class ExpressionBuilder extends React.Component {
     activeDraggable = null;
@@ -42,14 +40,17 @@ class ExpressionBuilder extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            nodes: [
-                // <DroppableItem onDragOver={(obj) => { this.activeDroppable = obj; }} index={0} key={0} />
-            ],
+            nodes: [],
         }
         // this.buildExpressionNodes();
         // this.printExpression();
     }
 
+    updateValue(key, val) {
+        let part = this.parts.find(p => p.key === key);
+        if (part) part.value = val;
+        this.printExpression();
+    }
 
     render() {
         return (
@@ -63,16 +64,20 @@ class ExpressionBuilder extends React.Component {
                     </div>
                 </div>
                 <div className='test2' style={{ display: 'flex' }}>
-                    <DroppableItem onDragOver={(obj) => { this.activeDroppable = obj; }} index={0} key={0} />
-                    {this.state.nodes.map(n =>
-                        this.getDraggable(n.type, n.key)
+                    {this.getDroppable(0,0)}
+                    {this.state.nodes.map((n, index) =>
+                        [
+                            this.getDraggable(n.type, n.key),
+                            this.getDroppable(index + 1, index + 1),
+                        ]
                     )}
                 </div>
             </div>
         );
     }
 
-    addParts(obj) {
+    addParts(obj, index) {
+        // console.log(obj, index);
         if (obj.props.type !== types.brackets) {
             let waitingType;
             switch (obj.props.type) {
@@ -88,14 +93,18 @@ class ExpressionBuilder extends React.Component {
                 default:
                     break;
             }
-            this.parts.push(
-                new ExpressionPart(this.getKey(), waitingType, 0)
-            );
+            this.parts = [
+                ...this.parts.slice(0, index),
+                new ExpressionPart(1001 + this.parts.length, waitingType, 0),
+                ...this.parts.slice(index),
+            ];
         } else {
-            this.parts.push(
-                new ExpressionPart(this.getKey(), types.bracketsLeft, 0),
-                new ExpressionPart(this.getKey(), types.bracketsRight, 0),
-            );
+            this.parts = [
+                ...this.parts.slice(0, index),
+                new ExpressionPart(1001 + this.parts.length, types.bracketsLeft),
+                new ExpressionPart(1001 + this.parts.length + 1, types.bracketsRight),
+                ...this.parts.slice(index),
+            ];
         }
         console.log(this.parts);
         this.activeDraggable = null;
@@ -108,59 +117,54 @@ class ExpressionBuilder extends React.Component {
     getDraggable(type, key) {
         return <DraggableItem
             onDragStart={(obj) => { this.activeDraggable = obj }}
-            onDragEnd={(obj) => { if (this.activeDraggable && this.activeDroppable) this.addParts.bind(this)(obj) }} // add condition
+            // onDrag={() => {this.activeDroppable = null}}
+            onDragEnd={(obj) => { if (this.activeDraggable && this.activeDroppable) this.addParts.bind(this)(this.activeDraggable, this.activeDroppable.props.index) }} // add condition
+            onUpdateValue={this.updateValue.bind(this)}
             type={type}
+            viewModel={this.props.viewModel}
             key={key}
+            key2={key}
         />
     }
 
-    // TODO: 
-    getKey() {
-        return (Math.random() * 100000).toString();
-    };
+    getDroppable(index, key) {
+        return <DroppableItem 
+            onDragOver={(obj) => { this.activeDroppable = obj; console.log('over');}} 
+            onDragLeave={() => { 
+                setTimeout(() => {
+                    this.activeDroppable = null;
+                    console.log('leave');
+                }, 10); 
+                console.log(this.activeDroppable);
+                console.log(this.activeDraggable);
+            }}
+            index={index} 
+            key={key} 
+        />;
+    }
+
+    // // TODO: 
+    // getKey() {
+    //     return (Math.random() * 100000).toString();
+    // };
 
     buildExpressionNodes() {
-        const nodes = [];
-        this.parts.forEach((p, index) => {
-            nodes.push(
-                new ExpressionPart(p.type, this.getKey())
-                // <DraggableItem
-                //     onDragStart={(obj) => { this.activeDraggable = obj }}
-                //     onDragEnd={(obj) => { if (this.activeDraggable && this.activeDroppable) this.addParts.bind(this)(obj) }} // add condition
-                //     type={p.type}
-                //     key={this.getKey()}
-                // />
-            );
-        });
-        // const nodes = [
-        //     <DroppableItem onDragOver={(obj) => { this.activeDroppable = obj; }} index={0} key={0} />
-        // ];
-        // this.parts.forEach((elem, index) => {
-        //     nodes.push(elem);
-        //     nodes.push(
-        //         <DroppableItem onDragOver={(obj) => { this.activeDroppable = obj; }} index={index + 1} key={index * 2 + 2} />
-        //     );
-
-        // })
         this.setState({
-            nodes: nodes,
+            nodes: this.parts.map(p => new ExpressionPart(p.key, p.type)),
         })
     }
 
     printExpression() {
         let expression = '';
         this.parts.forEach(p => {
-            expression += '--' + p.value;
+            if (p.type === types.bracketsLeft) {
+                expression += '('
+            } else if (p.type === types.bracketsRight) {
+                expression += ')'
+            } else {
+                expression += p.value;
+            }
         });
-        // this.parts.forEach((obj) => {
-        //     console.log(obj);
-        //     console.log(obj.value);
-        //     if (obj.props.type === types.bracketsLeft) {
-        //         // expression += '()()';
-        //     }
-
-        //     // expression += '';
-        // });
         console.log(expression);
     }
 

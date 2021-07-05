@@ -12,6 +12,12 @@ class DraggableItem extends React.Component {
         // } else if (props.type === types.bracketsRight) {
         //     this.value = ')'
         // }
+
+        // console.log(props.viewModel);
+        this.modelProps = [];
+        for (let p in props.viewModel) {
+            this.modelProps.push(p);
+        }
     }
 
     opertors = [
@@ -31,6 +37,8 @@ class DraggableItem extends React.Component {
     changeNumber(e) {
         this.value = e.target.value;
         console.log(this.value);
+        console.log(this.props);
+        this.props.onUpdateValue(this.props.key2, e.target.value);
     }
 
     render() {
@@ -70,7 +78,9 @@ class DraggableItem extends React.Component {
                 {this.props.type === types.modelSelect &&
                     <div style={this.itemStyles}>
                         <select style={this.inputStyles} onChange={this.changeNumber.bind(this)}>
-                            <option key='qwerty'>qwerty</option>
+                            {this.modelProps.map(p => 
+                                <option key={p}>{p}</option>
+                            )}
                         </select>
                     </div>
                 }
