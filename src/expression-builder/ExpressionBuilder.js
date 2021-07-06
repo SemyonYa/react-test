@@ -2,6 +2,7 @@ import React from 'react';
 import './ExpressionBuilder.css';
 import DraggableItem from './DraggaleItem';
 import DroppableItem from './DroppableItem';
+import RemovableItem from './RemovableItem';
 // import { Draggable, Droppable } from 'react-drag-and-drop';
 
 ///
@@ -46,12 +47,6 @@ class ExpressionBuilder extends React.Component {
         // this.printExpression();
     }
 
-    updateValue(key, val) {
-        let part = this.parts.find(p => p.key === key);
-        if (part) part.value = val;
-        this.printExpression();
-    }
-
     render() {
         return (
             <div className='wrap'>
@@ -63,39 +58,50 @@ class ExpressionBuilder extends React.Component {
                         )}
                     </div>
                 </div>
-                <div className='test2' style={{ display: 'flex' }}>
-                    {this.getDroppable(0, 0)}
+                <div className='test2'>
+                    {this.getDroppable(0)}
                     {this.state.nodes.map((n, index) =>
                         [
-                            this.getDraggable(n.type, n.key),
-                            this.getDroppable(index + 1, index + 1),
+                            this.getRemovable(n.type, n.key, n.value),
+                            this.getDroppable(index + 1),
                         ]
                     )}
                 </div>
             </div>
         );
     }
+    
+    updateValue(key, val) {
+        let part = this.parts.find(p => p.key === key);
+        if (part) part.value = val;
+        this.printExpression();
+    }
 
     addParts(obj, index) {
         // console.log(obj, index);
         if (obj.props.type !== types.brackets) {
             let waitingType;
+            let initialValue;
             switch (obj.props.type) {
                 case types.num:
                     waitingType = types.numInput
+                    initialValue = 0;
                     break;
                 case types.model:
                     waitingType = types.modelSelect
+                    // TODO: 
+                    initialValue = 'id';
                     break;
                 case types.operator:
                     waitingType = types.operatorSeleect
+                    initialValue = '+';
                     break;
                 default:
                     break;
             }
             this.parts = [
                 ...this.parts.slice(0, index),
-                new ExpressionPart(1001 + this.parts.length, waitingType, 0),
+                new ExpressionPart(1001 + this.parts.length, waitingType, initialValue),
                 ...this.parts.slice(index),
             ];
         } else {
@@ -114,8 +120,8 @@ class ExpressionBuilder extends React.Component {
         this.printExpression();
     }
 
-    removePart(key) {
-        this.parts = this.parts.filter(p => p.key !== key)
+    removePart(id) {
+        this.parts = this.parts.filter(p => p.key !== id)
         this.buildExpressionNodes();
         this.printExpression();
     }
@@ -125,16 +131,16 @@ class ExpressionBuilder extends React.Component {
             onDragStart={(obj) => { this.activeDraggable = obj }}
             // onDrag={() => {this.activeDroppable = null}}
             onDragEnd={(obj) => { if (this.activeDraggable && this.activeDroppable) this.addParts.bind(this)(this.activeDraggable, this.activeDroppable.props.index) }} // add condition
-            onUpdateValue={this.updateValue.bind(this)}
-            onRemove={(obj) => { console.log(obj); this.removePart.bind(this)(obj.props.key2) }}
+            // onUpdateValue={this.updateValue.bind(this)}
+            // onRemove={(obj) => { console.log(obj); this.removePart.bind(this)(obj.props.key2) }}
             type={type}
             viewModel={this.props.viewModel}
             key={key}
-            key2={key}
+            id={key}
         />
     }
 
-    getDroppable(index, key) {
+    getDroppable(index) {
         return <DroppableItem
             onDragOver={(e, obj) => { e.preventDefault(); this.activeDroppable = obj; console.log('over'); }}
             onDragLeave={() => {
@@ -145,13 +151,25 @@ class ExpressionBuilder extends React.Component {
                 console.log(this.activeDraggable);
             }}
             index={index}
-            key={key}
+            key={index}
         />;
+    }
+
+    getRemovable(type, key, value) {
+        return <RemovableItem
+            onUpdateValue={this.updateValue.bind(this)}
+            onRemove={(id) => { console.log(id); this.removePart.bind(this)(id) }}
+            type={type}
+            viewModel={this.props.viewModel}
+            value={value}
+            key={key}
+            id={key}
+        />
     }
 
     buildExpressionNodes() {
         this.setState({
-            nodes: this.parts.map(p => new ExpressionPart(p.key, p.type)),
+            nodes: this.parts,
         })
     }
 
@@ -316,6 +334,10 @@ class ExpressionBuilder extends React.Component {
     //     }).join(' ');
     //     document.querySelector('.expression2').innerText = expressionString;
     // }
+}
+
+ExpressionBuilder.propTypes = {
+
 }
 
 export default ExpressionBuilder

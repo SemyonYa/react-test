@@ -7,13 +7,6 @@ class DraggableItem extends React.Component {
 
     constructor(props) {
         super(props);
-        // if (props.type === types.bracketsLeft) {
-        //     this.value = '('
-        // } else if (props.type === types.bracketsRight) {
-        //     this.value = ')'
-        // }
-
-        // console.log(props.viewModel);
         this.modelProps = [];
         for (let p in props.viewModel) {
             this.modelProps.push(p);
@@ -34,12 +27,12 @@ class DraggableItem extends React.Component {
         '<=',
     ];
 
-    changeNumber(e) {
-        this.value = e.target.value;
-        console.log(this.value);
-        console.log(this.props);
-        this.props.onUpdateValue(this.props.key2, e.target.value);
-    }
+    // changeNumber(e) {
+    //     this.value = e.target.value;
+    //     console.log(this.value);
+    //     console.log(this.props);
+    //     this.props.onUpdateValue(this.props.id, e.target.value);
+    // }
 
     render() {
         return (
@@ -48,24 +41,25 @@ class DraggableItem extends React.Component {
                 // onDrag={() => this.props.onDrag()}
                 onDragEnd={() => this.props.onDragEnd(this)}
                 // onDragEnter={(e) => { console.log('enter', e); }}
-                style={this.wrapStyles} draggable='true'
-            // data-type={this.props.type}
+                style={this.itemStyles} draggable='true'
             >
-                <div style={this.labelStyles}></div>
-                {this.props.type === types.operatorSeleect &&
-                    <div style={this.itemStyles}>
+                {/* <div style={this.labelStyles}></div> */}
+                {/* {this.props.type === types.operatorSeleect &&
+                    // <div style={this.itemStyles}>
                         <select style={this.inputStyles} onChange={this.changeNumber.bind(this)}>
                             {this.opertors.map(o =>
                                 <option value={o} key={o}>{o}</option>
                             )}
                         </select>
-                    </div>
-                }
+                    // </div>
+                } */}
                 {this.props.type === types.operator &&
-                    <div style={this.itemStyles}>+/-</div>
+                    <span>+/-</span>
+                    // <div style={this.itemStyles}>+/-</div>
                 }
                 {this.props.type === types.brackets &&
-                    <div style={this.itemStyles}>()</div>
+                    <span>()</span>
+                    // <div style={this.itemStyles}>()</div>
                 }
                 {this.props.type === types.bracketsLeft &&
                     <div style={this.itemStyles}>(</div>
@@ -76,7 +70,7 @@ class DraggableItem extends React.Component {
                 {this.props.type === types.model &&
                     <div style={this.itemStyles}>model.prop</div>
                 }
-                {this.props.type === types.modelSelect &&
+                {/* {this.props.type === types.modelSelect &&
                     <div style={this.itemStyles}>
                         <select style={this.inputStyles} onChange={this.changeNumber.bind(this)}>
                             {this.modelProps.map(p =>
@@ -84,16 +78,15 @@ class DraggableItem extends React.Component {
                             )}
                         </select>
                     </div>
-                }
+                } */}
                 {this.props.type === types.num &&
                     <div style={this.itemStyles}>num</div>
                 }
-                {this.props.type === types.numInput &&
+                {/* {this.props.type === types.numInput &&
                     <div style={this.itemStyles}>
                         <input type='number' style={this.inputStyles} onChange={this.changeNumber.bind(this)} />
                     </div>
-                }
-                <div style={this.removeStyle} onClick={() => this.props.onRemove(this)}>-</div>
+                } */}
             </div>
         );
     }
@@ -102,28 +95,16 @@ class DraggableItem extends React.Component {
     //  STYLES
     ///
 
-    wrapStyles = {
+    itemStyles = {
         position: 'relative',
         height: '20px',
-        width: '65px',
-        // maxWidth: '100px',
+        minWidth: '50px',
         borderRadius: '4px',
         border: 'solid 1px #efefef',
-        display: 'flex',
-        // overflow: 'hidden'
-    }
+        margin: '0 4px',
 
-    labelStyles = {
-        flex: '1 0 10px',
-        height: '100%',
-        borderRadius: '4px',
-        backgroundColor: '#efefef',
-        cursor: 'pointer',
-    }
-
-    itemStyles = {
         display: 'flex',
-        flex: '0 1 calc(100% - 10px)',
+        // flex: '0 1 calc(100% - 10px)',
         justifyContent: 'center',
         alignItems: 'center',
         fontSize: '11px',
@@ -131,28 +112,29 @@ class DraggableItem extends React.Component {
         lineHeight: 1,
     }
 
+    // labelStyles = {
+    //     flex: '1 0 10px',
+    //     height: '100%',
+    //     borderRadius: '4px',
+    //     backgroundColor: '#efefef',
+    //     cursor: 'pointer',
+    // }
+
+    // itemStyles = {
+        // display: 'flex',
+        // flex: '0 1 calc(100% - 10px)',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // fontSize: '11px',
+        // padding: '0 3px',
+        // lineHeight: 1,
+    // }
+
     inputStyles = {
         width: '100%',
         backgroundColor: 'transparent',
         border: 'none',
         borderBottom: 'solid 1px #cecece'
-    }
-
-    removeStyle = {
-        position: 'absolute',
-        bottom: '-6px',
-        right: '0px',
-        width: '10px',
-        height: '10px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '0',
-        lineHeight: '1',
-        borderRadius: '50%',
-        backgroundColor: 'blue',
-        color: 'white',
-        cursor: 'pointer',
     }
 }
 

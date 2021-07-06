@@ -76,6 +76,7 @@ input.expression-node {
 .test2 {
   padding: 16px;
   display: inline-flex;
+  justify-content: flex-start;
 }
 
 .droppable {
