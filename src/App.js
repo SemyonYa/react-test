@@ -1,21 +1,31 @@
 import React from 'react'
-import ExpressionBuilder from './expression-builder/ExpressionBuilder'
-import ExpressionBuilder2 from './ExpressionBuilder/ExpressionBuilder';
+// import './ExpressionBuilder.css';
+import ExpressionBuilder from './ExpressionBuilder/ExpressionBuilder';
 
-function App() {
-  const fake = new Fake();
+class App extends React.Component {
+  constructor() {
+    super()
+    this.fake = new Fake();
+    this.state = {
+      expression: '( 1 + age ) > 34'
+    };
+  }
 
-  return (
-    <div className="wrapper">
-      <h1>First REACT</h1>
-      <ExpressionBuilder viewModel={fake} />
-      <h2>Second REACT</h2>
-      <ExpressionBuilder2 expression='( 1 + age ) > 34' viewModel={new Fake()} onExpressionChanged={onExpressionChanged} />
-    </div>
-  );
+  render() {
+    return (
+      <div className="wrapper">
+        <h1>Expression Builder</h1>
+        <ExpressionBuilder expression={this.state.expression} viewModel={this.fake} onExpressionChanged={this.onExpressionChanged.bind(this)} />
+        <hr width='100%' />
+        <div>{this.state.expression}</div>
+      </div>
+    );
+  }
 
-  function onExpressionChanged(val) {
-    console.log('val', val);
+  onExpressionChanged(expression) {
+    this.setState({
+      expression
+    });
   }
 }
 
