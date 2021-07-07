@@ -67,13 +67,11 @@ class Part extends React.Component {
 
     wrapStyles = {
         position: 'relative',
-        height: '20px',
-        width: '65px',
+        // height: '1.5rem',
+        // width: '65px',
         borderRadius: '4px',
-        border: 'solid 1px #efefef',
+        // border: 'solid 1px #efefef',
         display: 'flex',
-        // overflowX: 'hidden',
-        // overflowY: 'none'
     };
 
     itemStyles = {
@@ -90,24 +88,23 @@ class Part extends React.Component {
         width: '100%',
         backgroundColor: 'transparent',
         border: 'none',
-        borderBottom: 'solid 1px #cecece'
+        // borderBottom: 'solid 1px #cecece'
     }
 
     removeStyle = {
-        position: 'absolute',
-        top: '-6px',
+        // position: 'absolute',
+        top: '-.25rem',
         right: '0px',
-        width: '10px',
-        height: '10px',
+        width: '.5rem',
+        height: '.5rem',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         padding: '0',
         lineHeight: '1',
         borderRadius: '50%',
-        // backgroundColor: 'darkred',
         fontSize: '.5rem',
-        color: 'darkred',
+        // color: 'darkred',
         cursor: 'pointer',
     }
 }

@@ -33,6 +33,7 @@ export const operators = [
     '*',
     '/',
     '==',
+    '!=',
     '&&',
     '||',
     '>',
@@ -76,6 +77,8 @@ class ExpressionBuilder extends React.Component {
                 return new ExpressionPart(types.part.operatorSelect, sp, 10000 + index);
             } else if (this.viewModelProps.includes(sp)) {
                 return new ExpressionPart(types.part.modelSelect, sp, 10000 + index);
+            } else {
+                throw new Error('Unexpected value');    
             }
         });
         console.log(stringParts);
@@ -230,7 +233,7 @@ class ExpressionBuilder extends React.Component {
     }
 
     ///
-    // Styles
+    //  Styles
     ///
 
     draggableStyle = {
